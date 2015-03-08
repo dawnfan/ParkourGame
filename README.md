@@ -7,7 +7,7 @@ cocos2d-x 3.x引擎开发
 
  1. ~~小人跳起后落地不稳定，有可能翻转~~ 解决，刚体弹性设为0
  2. ~~小人吃金币有可能计数器多次++（由于使用了isVisible）~~ 解决（用isVisible判断..）
- 3. fatal，小人有可能被障碍物打击的翻转
+ 3. ~~fatal，小人有可能被障碍物打击的翻转~~ 解决（setRotationEnable(false);）
 
 To do:
 
