@@ -17,6 +17,7 @@ public:
 	PlayLayer();
 
 	virtual bool onTouchBegan(Touch *touch, Event *unused) override;
+	virtual void onTouchMoved(Touch *touch, Event *unused) override;
 	void setPhyWorld(PhysicsWorld* world){ m_world = world; }
 	//初始化背景
 	void initBG();
@@ -43,6 +44,8 @@ private:
 	Manager* man;
 	//金币数量
 	int counter;
+	//触摸起始点
+	int startPoint;
 };
 
 #endif // __PLAYLAYER_H__

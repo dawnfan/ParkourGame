@@ -39,6 +39,8 @@ Animate* Base::createAnimate(SpriteFrameCache* frameCache){
 void Base::initBody(int mask){
 	auto phyBody = PhysicsBody::createEdgeBox(sprite->getContentSize());
 	phyBody->getShape(0)->setDensity(1000000);
+	phyBody->getShape(0)->setMass(10000);
+	phyBody->getShape(0)->setMaterial(PHYSICSBODY_MATERIAL_DEFAULT);
 	phyBody->setCategoryBitmask(1);
 	//设置为0，不会和奔跑的小人发生碰撞，因为是两个碰撞物体的掩码值逻辑与
 	phyBody->setCollisionBitmask(mask);

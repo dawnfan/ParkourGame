@@ -89,7 +89,9 @@ void Runner::initBody(){
 
 	//创建runner的刚体
 	auto runerBody = PhysicsBody::createBox(bodySize, PHYSICSBODY_MATERIAL_DEFAULT);
-
+	//解决小人翻倒的问题
+	runerBody->setRotationEnable(false);
+	runerBody->getShape(0)->setRestitution(0);
 	//设置可以碰撞检测
 	runerBody->setCategoryBitmask(1);
 	runerBody->setCollisionBitmask(1);
@@ -111,7 +113,7 @@ void Runner::Jump(){
 	if (m_state == running){
 		m_state = jumpUp;
 
-		auto mass = this->getPhysicsBody()->getMass() * 150;
+		auto mass = this->getPhysicsBody()->getMass() * 350;
 
 		this->getPhysicsBody()->applyImpulse(Vect(0, mass));
 

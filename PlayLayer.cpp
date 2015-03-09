@@ -1,5 +1,8 @@
 #include "PlayLayer.h"
 
+//电脑上运行的时候设为True，点一下小人就可以跳跃，发布到手机端的时候设成False
+#define onComputer true
+
 PlayLayer::PlayLayer()
 	:counter(0),
 	animation(NULL),
@@ -23,7 +26,7 @@ Scene *PlayLayer::createScene()
 	auto scene = Scene::createWithPhysics();
 	//最后的参数DEBUGDRAW_ALL影响的是显示的红框
 	scene->getPhysicsWorld()->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);
-
+	scene->getPhysicsWorld()->setGravity({ 0, -500 });
 	/*
 	//创建一个边界
 	Size visibleSize = Director::getInstance()->getVisibleSize();
@@ -63,6 +66,8 @@ bool PlayLayer::init()
 
 	auto touchListener = EventListenerTouchOneByOne::create();
 	touchListener->onTouchBegan = CC_CALLBACK_2(PlayLayer::onTouchBegan, this);
+	if (!onComputer)
+		touchListener->onTouchMoved = CC_CALLBACK_2(PlayLayer::onTouchMoved, this);// 触摸移动时触发
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
 
 	auto contactListener = EventListenerPhysicsContact::create();
@@ -138,14 +143,17 @@ void PlayLayer::update(float dt){
 
 //触摸回调
 bool PlayLayer::onTouchBegan(Touch *touch, Event *unused){
-	//auto location = touch->getLocation();
-	//this->hero->runAction(MoveTo::create(1.1,location));
-	//this->hero->getPhysicsBody()->applyForce({0,250});
-	//this->hero->runAction(ScaleTo::create(2,2));
-	//auto mass = this->hero->getPhysicsBody()->getMass() * 150;// 力大小 
-	//this->hero->getPhysicsBody()->applyImpulse(Vect(0, mass));
-	this->hero->Jump();
+	if (onComputer)
+		this->hero->Jump();
+	else
+		startPoint = touch->getLocation().x;
 	return true;
+}
+
+void PlayLayer::onTouchMoved(Touch *touch, Event *unused){
+	auto location = touch->getLocation();
+	if (location.x > startPoint)
+		this->hero->Jump();
 }
 
 //碰撞回调

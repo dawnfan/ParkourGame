@@ -86,7 +86,7 @@ void Manager::update(float dt){
 		float posY;
 		for (Vector<Barrier*>::iterator iter = this->m_barr.begin(); iter != this->m_barr.end(); ++iter){
 			auto barr = *iter;
-			posX += 100;
+			posX += 400;
 			posY = 49 + 15 + CCRANDOM_0_1() * 160;
 			barr->setPosition(posX, posY);
 			barr->setVisible(true);
