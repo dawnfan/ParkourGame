@@ -5,6 +5,9 @@
 
 PlayLayer::PlayLayer()
 	:counter(0),
+	score(0),
+	level(1),
+	target(1000),
 	animation(NULL),
 	animate(NULL),
 	hero(NULL),
@@ -41,7 +44,7 @@ Scene *PlayLayer::createScene()
 	*/
 	auto layer = PlayLayer::create();
 	layer->setPhyWorld(scene->getPhysicsWorld());
-
+	layer->setTag(13);
 	scene->addChild(layer);
 	return scene;
 }
@@ -57,12 +60,12 @@ bool PlayLayer::init()
 	//开启update
 	this->scheduleUpdate();
 	hero = Runner::create();
-	this->addChild(hero);
+	this->addChild(hero,11);
 	hero->setPosition(300, 350);
 	hero->Run();
 
 	man = Manager::create();
-	this->addChild(man);
+	this->addChild(man,3);
 
 	auto touchListener = EventListenerTouchOneByOne::create();
 	touchListener->onTouchBegan = CC_CALLBACK_2(PlayLayer::onTouchBegan, this);
@@ -79,10 +82,19 @@ bool PlayLayer::init()
 
 void PlayLayer::initBG(){
 	auto visibleSize = Director::getInstance()->getVisibleSize();
+
+	//初始化雾霾
+	//this->haze = Sprite::create("OverBG.png");
+	//设置透明度
+	//haze->setOpacity(150);
+	//haze->setPosition(visibleSize.width / 2, visibleSize.height / 2);
+	//this->addChild(haze, 10);
+
+	
 	//背景1
 	bgSprite1 = Sprite::create("Map00.png");
 	bgSprite1->setPosition(visibleSize.width / 2, visibleSize.height / 2);
-	this->addChild(bgSprite1);
+	this->addChild(bgSprite1,1);
 
 	//地面1
 	groundSprite1 = Sprite::create("Ground00.png");
@@ -93,23 +105,25 @@ void PlayLayer::initBG(){
 	body1->getShape(0)->setRestitution(0);
 	body1->setDynamic(false);
 	groundSprite1->setPhysicsBody(body1);
-	this->addChild(groundSprite1);
+	this->addChild(groundSprite1,2);
+
 
 	//背景2
 	bgSprite2 = Sprite::create("Map01.png");
 	bgSprite2->setPosition(bgSprite1->getContentSize().width + visibleSize.width / 2, visibleSize.height / 2);
-	this->addChild(bgSprite2);
+	this->addChild(bgSprite2,1);
 
 	//地面2
 	groundSprite2 = Sprite::create("Ground01.png");
 	groundSprite2->setTag(12);
-	groundSprite2->setPosition(bgSprite1->getContentSize().width + visibleSize.width / 2,groundSprite2->getContentSize().height / 2);
+	groundSprite2->setPosition(bgSprite1->getContentSize().width + visibleSize.width / 2, groundSprite2->getContentSize().height / 2);
 	auto body2 = PhysicsBody::createBox(groundSprite2->getContentSize());
 	body2->setDynamic(false);
 	//弹性设为0，奔跑的东西不会颠倒
 	body2->getShape(0)->setRestitution(0);
 	groundSprite2->setPhysicsBody(body2);
-	this->addChild(groundSprite2);
+	this->addChild(groundSprite2,2);
+
 }
 
 //背景向后移动
@@ -119,6 +133,7 @@ void PlayLayer::update(float dt){
 
 	posX1 -= 2;
 	posX2 -= 2;
+	this->score += 1;
 
 	auto mapSize = bgSprite1->getContentSize();
 
@@ -138,6 +153,17 @@ void PlayLayer::update(float dt){
 	//检查是否游戏结束
 	if (hero->getPositionX()< 0){
 		Director::getInstance()->end();
+	}
+	//围住小雨滴
+	if (this->score >= this->target){
+		this->hero->removeFromParent();
+		this->man->removeFromParent();
+		Scene* newScene = GameLayer::createScene();
+		GameLayer* layer = (GameLayer*)(newScene->getChildren().at(0));
+		//设定下一关的初始值
+		layer->setLevel(this->level);
+		layer->setTarget(this->target);
+		Director::sharedDirector()->replaceScene(newScene);
 	}
 }
 
@@ -191,4 +217,16 @@ void PlayLayer::runEffect(Sprite* coin){
 	particleStars->setPosition(coin->getPosition());
 	particleStars->setScale(0.3);
 	this->addChild(particleStars, 20);
+}
+
+void PlayLayer::setLevel(unsigned lev){
+	this->level = lev;
+}
+
+void PlayLayer::setTarget(unsigned tar){
+	this->target = tar;
+}
+
+Sprite* PlayLayer::getHaze(){
+	return this->haze;
 }
