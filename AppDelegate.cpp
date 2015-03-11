@@ -1,6 +1,6 @@
 #include "AppDelegate.h"
 #include "HelloWorldScene.h"
-#include "PlayLayer.h"
+//#include "PlayLayer.h"
 
 USING_NS_CC;
 

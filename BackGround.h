@@ -5,15 +5,14 @@
 
 USING_NS_CC;
 
-class Background : public cocos2d::Layer
-{
+class Background : public cocos2d::Node{
 public:
-	static cocos2d::Scene* createScene();
 	virtual bool init();
 	CREATE_FUNC(Background);
-
 private:
-
+	Sprite* bgSprite;
+	//Sprite* groundSprite;
+	Size visibleSize;
 };
 
 #endif // __BACKGROUND_H__

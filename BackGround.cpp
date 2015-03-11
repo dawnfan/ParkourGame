@@ -1,21 +1,13 @@
 #include "BackGround.h"
 
-Scene* Background::createScene()
-{
-	auto scene = Scene::create();
-	auto layer = Background::create();
-	scene->addChild(layer);
-	return scene;
-}
 
 bool Background::init()
 {
-	//////////////////////////////
-	// 1. super init first
-	if (!Layer::init())
-	{
-		return false;
-	}
-
+	visibleSize = Director::getInstance()->getVisibleSize();
+	bgSprite = Sprite::create("Map00.png");
+	//bgSprite->setPosition(visibleSize.width / 2, visibleSize.height / 2);
+	//groundSprite = Sprite::create("Ground00.png");
+	this->addChild(bgSprite);
+	//this->addChild(groundSprite);
 	return true;
 }

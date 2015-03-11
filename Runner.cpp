@@ -7,10 +7,12 @@ bool Runner::init(){
 	auto frameCache = SpriteFrameCache::getInstance();
 	frameCache->addSpriteFramesWithFile("parkour.plist", "parkour.png");
 
-	m_runner = Sprite::createWithSpriteFrameName("runner0.png");
+	m_runner = Sprite::create("runner1.png");
+	//m_runner = Sprite::createWithSpriteFrameName("runner0.png");
 
 	run_jumpSize = m_runner->getContentSize();
-	crouchSize = Sprite::createWithSpriteFrameName("runnerCrouch0.png")->getContentSize();
+	crouchSize = m_runner->getContentSize();
+	//crouchSize = Sprite::createWithSpriteFrameName("runnerCrouch0.png")->getContentSize();
 
 	this->addChild(m_runner);
 
@@ -33,9 +35,10 @@ void Runner::initActionSet(){
 	Vector<SpriteFrame*>frameVector;
 
 	/* 1.----------------加载跑动的Animation-----------------*/
-	for (int i = 0; i <= 7; i++) {
+	for (int i = 1; i < 7; i++) {
 		//从缓存池中加载精灵到Vector
-		frame = frameCache->spriteFrameByName(String::createWithFormat("runner%d.png", i)->getCString());
+		frame = SpriteFrame::create(StringUtils::format("runner%d.png", i), Rect(0, 0, 500, 500));
+		//frame = frameCache->spriteFrameByName(String::createWithFormat("runner%d.png", i)->getCString());
 		frameVector.pushBack(frame);
 	}
 
@@ -46,29 +49,24 @@ void Runner::initActionSet(){
 
 	/*4---------------*/
 	frameVector.clear();
-	for (int i = 0; i <= 3; i++){
-		frame = frameCache->spriteFrameByName(String::createWithFormat("runnerJumpUp%d.png", i)->getCString());
+	for (int i = 1; i <= 4; i++){
+		frame = SpriteFrame::create(StringUtils::format("runnerJumpUp%d.png", i), Rect(0, 0, 500, 500));
+		//frame = frameCache->spriteFrameByName(String::createWithFormat("runnerJumpUp%d.png", i)->getCString());
 		frameVector.pushBack(frame);
 	}
 	auto jumpUp_animation = Animation::createWithSpriteFrames(frameVector, 0.2);//不设置无限循环
 	AnimationCache::getInstance()->addAnimation(jumpUp_animation, "jumpUp");
-
-	/**/
+	
+	
 	frameVector.clear();
 	for (int i = 0; i <= 1; i++){
-		frame = frameCache->spriteFrameByName(String::createWithFormat("runnerJumpDown%d.png", i)->getCString());
+		frame = SpriteFrame::create(StringUtils::format("runnerJumpDown%d.png", i),Rect(0,0,500,500));
+		//frame = frameCache->spriteFrameByName(String::createWithFormat("runnerJumpDown%d.png", i)->getCString());
 		frameVector.pushBack(frame);
 	}
 	auto jumpDown_animation = Animation::createWithSpriteFrames(frameVector, 0.3);
 	AnimationCache::getInstance()->addAnimation(jumpDown_animation, "jumpDown");
-
-	/**/
-	frameVector.clear();
-	frame = frameCache->spriteFrameByName("runnerCrouch0.png");
-	frameVector.pushBack(frame);
-	auto crouch_animation = Animation::createWithSpriteFrames(frameVector, 0.3);//不设置无限循环
-	AnimationCache::getInstance()->addAnimation(crouch_animation, "crouch");
-
+	
 }
 
 void Runner::doAction(const char* actionName){
@@ -89,7 +87,9 @@ void Runner::initBody(){
 
 	//创建runner的刚体
 	auto runerBody = PhysicsBody::createBox(bodySize, PHYSICSBODY_MATERIAL_DEFAULT);
-
+	//解决小人翻倒的问题
+	runerBody->setRotationEnable(false);
+	runerBody->getShape(0)->setRestitution(0);
 	//设置可以碰撞检测
 	runerBody->setCategoryBitmask(1);
 	runerBody->setCollisionBitmask(1);
@@ -111,7 +111,7 @@ void Runner::Jump(){
 	if (m_state == running){
 		m_state = jumpUp;
 
-		auto mass = this->getPhysicsBody()->getMass() * 150;
+		auto mass = this->getPhysicsBody()->getMass() * 350;
 
 		this->getPhysicsBody()->applyImpulse(Vect(0, mass));
 
