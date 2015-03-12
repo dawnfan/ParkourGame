@@ -3,16 +3,12 @@
 USING_NS_CC;
 
 bool Runner::init(){
-	//加载图片到缓存池
 	auto frameCache = SpriteFrameCache::getInstance();
-	frameCache->addSpriteFramesWithFile("parkour.plist", "parkour.png");
-
-	m_runner = Sprite::create("runner1.png");
-	//m_runner = Sprite::createWithSpriteFrameName("runner0.png");
+	frameCache->addSpriteFramesWithFile("hazefight.plist", "hazefight.png");
+	m_runner = Sprite::createWithSpriteFrameName("run0.png");
 
 	run_jumpSize = m_runner->getContentSize();
 	crouchSize = m_runner->getContentSize();
-	//crouchSize = Sprite::createWithSpriteFrameName("runnerCrouch0.png")->getContentSize();
 
 	this->addChild(m_runner);
 
@@ -29,16 +25,16 @@ bool Runner::init(){
 
 void Runner::initActionSet(){
 	auto frameCache = SpriteFrameCache::getInstance();
-	frameCache->addSpriteFramesWithFile("parkour.plist", "parkour.png");
+	frameCache->addSpriteFramesWithFile("hazefight.plist", "hazefight.png");
 	SpriteFrame* frame = NULL;
 	//3.0中改用vector 而不是用Array
 	Vector<SpriteFrame*>frameVector;
 
 	/* 1.----------------加载跑动的Animation-----------------*/
-	for (int i = 1; i < 7; i++) {
+	for (int i = 0; i < 6; i++) {
 		//从缓存池中加载精灵到Vector
-		frame = SpriteFrame::create(StringUtils::format("runner%d.png", i), Rect(0, 0, 500, 500));
-		//frame = frameCache->spriteFrameByName(String::createWithFormat("runner%d.png", i)->getCString());
+		//frame = SpriteFrame::create(StringUtils::format("ani_blow/runner%d.png", i), Rect(0, 0, 500, 500));
+		frame = frameCache->spriteFrameByName(String::createWithFormat("run%d.png", i)->getCString());
 		frameVector.pushBack(frame);
 	}
 
@@ -49,9 +45,9 @@ void Runner::initActionSet(){
 
 	/*4---------------*/
 	frameVector.clear();
-	for (int i = 1; i <= 4; i++){
-		frame = SpriteFrame::create(StringUtils::format("runnerJumpUp%d.png", i), Rect(0, 0, 500, 500));
-		//frame = frameCache->spriteFrameByName(String::createWithFormat("runnerJumpUp%d.png", i)->getCString());
+	for (int i = 0; i <= 3; i++){
+		//frame = SpriteFrame::create(StringUtils::format("ani_roll/runnerJumpUp%d.png", i), Rect(0, 0, 500, 500));
+		frame = frameCache->spriteFrameByName(String::createWithFormat("up%d.png", i)->getCString());
 		frameVector.pushBack(frame);
 	}
 	auto jumpUp_animation = Animation::createWithSpriteFrames(frameVector, 0.2);//不设置无限循环
@@ -60,8 +56,8 @@ void Runner::initActionSet(){
 	
 	frameVector.clear();
 	for (int i = 0; i <= 1; i++){
-		frame = SpriteFrame::create(StringUtils::format("runnerJumpDown%d.png", i),Rect(0,0,500,500));
-		//frame = frameCache->spriteFrameByName(String::createWithFormat("runnerJumpDown%d.png", i)->getCString());
+		//frame = SpriteFrame::create(StringUtils::format("ani_roll/runnerJumpDown%d.png", i),Rect(0,0,500,500));
+		frame = frameCache->spriteFrameByName(String::createWithFormat("down%d.png", i)->getCString());
 		frameVector.pushBack(frame);
 	}
 	auto jumpDown_animation = Animation::createWithSpriteFrames(frameVector, 0.3);

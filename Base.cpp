@@ -9,7 +9,7 @@ bool Base::init(){
 	return true;
 }
 
-Animate* Base::createAnimate(SpriteFrameCache* frameCache){
+Animate* Base::createAnimate(SpriteFrameCache* frameCache,int n,const char* name){
 	SpriteFrame* frame = NULL;
 	//数组不行 要用vector
 	//auto frameArray = Array::create();
@@ -17,9 +17,9 @@ Animate* Base::createAnimate(SpriteFrameCache* frameCache){
 	Vector<SpriteFrame*>frameArray;
 
 	// 用一个列表保存所有SpriteFrame对象 
-	for (int i = 0; i <= 7; i++) {
+	for (int i = 0; i < n; i++) {
 		/* 从SpriteFrame缓存池中获取CCSpriteFrame对象 */
-		frame = frameCache->spriteFrameByName(String::createWithFormat("coin%d.png", i)->getCString());
+		frame = frameCache->spriteFrameByName(String::createWithFormat("%s%d.png",name, i)->getCString());
 		frameArray.pushBack(frame);
 
 	}

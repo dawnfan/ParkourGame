@@ -33,18 +33,18 @@ bool HelloWorld::init()
 	//触摸效果开启
 	this->setTouchEnabled(true);
 
-	//冒险模式
+	//开始游戏
 	auto item_Adventure = MenuItemImage::create(
 							"menu/play1.png",
 							"menu/play2.png",
 							CC_CALLBACK_1(HelloWorld::startGame, this));
-	item_Adventure->setPosition(ccp(80,-135));
+	item_Adventure->setPosition(screenSize.width/2+55,screenSize.height/2-28);
 	//关于界面
 	auto item_About= MenuItemImage::create(
 							"menu/about1.png",
 							"menu/about2.png",
 							CC_CALLBACK_1(HelloWorld::aboutFunc, this));
-	item_About->setPosition(ccp(-110,-200));
+	item_About->setPosition(item_About->getContentSize().width-20,item_About->getContentSize().height/2);
 	//播放背景音乐
 	if(!userDefault->getBoolForKey("Music")){
 		userDefault->getBoolForKey("Music",true);
@@ -79,9 +79,10 @@ bool HelloWorld::init()
 	}
 	//int selectId = AudioState? 0 : 1;
 	item_Voice->setSelectedIndex(selectId);
-	item_Voice->setPosition(ccp(-30,-155));
+	item_Voice->setPosition(item_Voice->getContentSize().width-20,item_Voice->getContentSize().height*2);
 
 	CCMenu* menu = CCMenu::create(item_Adventure,item_Voice,item_About,NULL);
+	menu->setPosition(0,0);
 	this->addChild(menu);
 
 	//响应键盘消息

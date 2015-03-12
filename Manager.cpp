@@ -7,25 +7,35 @@ bool Manager::init(){
 	if (!Node::init()){
 		return false;
 	}
+	frameCache = SpriteFrameCache::getInstance();
+	frameCache->addSpriteFramesWithFile("parkour.plist", "parkour.png");
 	createCoin();
 	createBarrier();
+	this->height = 60;
 	this->scheduleUpdate();
 	return true;
 }
 
 void Manager::createCoin(){
 	for (int i = 0; i < 5; ++i){
-		auto coin = Coin::create();
+		auto coin = Base::create();
+		coin->sprite = Sprite::createWithSpriteFrameName("coin0.png");
+		coin->addChild(coin->sprite);
+		coin->sprite->runAction(coin->createAnimate(frameCache,6,"coin"));
+		coin->initBody(0);
 		coin->setVisible(false);
 		coin->setTag(coinTag);
 		this->addChild(coin);
-		this->m_coinArr.pushBack(coin);
+		this->m_coin.pushBack(coin);
 	}
 }
 
 void Manager::createBarrier(){
 	for (int i = 0; i < 5; ++i){
-		auto barr = Barrier::create();
+		auto barr = Base::create();
+		barr->sprite = Sprite::createWithSpriteFrameName("rock.png");
+		barr->addChild(barr->sprite);
+		barr->initBody(1);
 		barr->setVisible(false);
 		barr->setTag(barrTag);
 		this->addChild(barr);
@@ -35,8 +45,8 @@ void Manager::createBarrier(){
 
 void Manager::update(float dt){
 	int setNum = 0;
-	for (Vector<Coin*>::iterator iter = this->m_coinArr.begin(); iter != this->m_coinArr.end(); ++iter){
-		Coin* coin = *iter;
+	for (Vector<Base*>::iterator iter = this->m_coin.begin(); iter != this->m_coin.end(); ++iter){
+		Base* coin = *iter;
 		//不在屏幕
 		if (coin->getPositionX() < -coin->getContentSize().width / 2){
 			coin->setVisible(false);
@@ -50,19 +60,19 @@ void Manager::update(float dt){
 	}
 	if (setNum == 5){
 		int i = 0;
-		float posX = 640 + 50;
-		float posY = 59 + 15 + CCRANDOM_0_1() * 160;
-		for (Vector<Coin*>::iterator iter = this->m_coinArr.begin(); iter != this->m_coinArr.end(); ++iter){
-			Coin* coin = *iter;
+		float posX = WIDTH+400;
+		float posY = height + CCRANDOM_0_1() * INTERVAL;
+		for (Vector<Base*>::iterator iter = this->m_coin.begin(); iter != this->m_coin.end(); ++iter){
+			Base* coin = *iter;
 			//两个两个一起
 			if (i < 2){
-				posX += 100;//两个金币同一高度，间隔30
+				posX += 100;//两个金币同一高度，间隔100
 			}
 			else{
 				//重新重置位置 
 				i = -1;
-				posY = 49 + 15 + CCRANDOM_0_1() * 160;
-				posX += 400;
+				posY = height + CCRANDOM_0_1() * INTERVAL;
+				posX += WIDTH;
 			}
 			i++;//重置金币个数记录
 			//
@@ -72,8 +82,9 @@ void Manager::update(float dt){
 	}
 	setNum = 0;
 	//障碍物
-	for (Vector<Barrier*>::iterator iter = this->m_barr.begin(); iter != this->m_barr.end(); ++iter){
-		Barrier* barr = *iter;
+	
+	for (Vector<Base*>::iterator iter = this->m_barr.begin(); iter != this->m_barr.end(); ++iter){
+		Base* barr = *iter;
 		if (barr->getPositionX() < -barr->getContentSize().width / 2)
 			barr->setVisible(false);
 		if (!barr->isVisible())
@@ -82,12 +93,12 @@ void Manager::update(float dt){
 		barr->setPositionX(barr->getPositionX() - 4);
 	}
 	if (setNum == 5){
-		float posX = 640 + 50;
+		float posX = WIDTH+400;
 		float posY;
-		for (Vector<Barrier*>::iterator iter = this->m_barr.begin(); iter != this->m_barr.end(); ++iter){
+		for (Vector<Base*>::iterator iter = this->m_barr.begin(); iter != this->m_barr.end(); ++iter){
 			auto barr = *iter;
-			posX += 400;
-			posY = 49 + 15 + CCRANDOM_0_1() * 160;
+			posX += WIDTH;
+			posY = height + CCRANDOM_0_1() * INTERVAL;
 			barr->setPosition(posX, posY);
 			barr->setVisible(true);
 		}

@@ -29,7 +29,8 @@ Scene *PlayLayer::createScene()
 	auto scene = Scene::createWithPhysics();
 	//最后的参数DEBUGDRAW_ALL影响的是显示的红框
 	scene->getPhysicsWorld()->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);
-	scene->getPhysicsWorld()->setGravity({ 0, -500 });
+	//scene->getPhysicsWorld()->setGravity({0,-500});
+	scene->getPhysicsWorld()->setGravity(Vect(0,-500));
 	/*
 	//创建一个边界
 	Size visibleSize = Director::getInstance()->getVisibleSize();
@@ -55,6 +56,10 @@ bool PlayLayer::init()
 		return false;
 	}
 	//start from here
+
+	man = Manager::create();
+	this->addChild(man, 3);
+
 	initBG();
 
 	//开启update
@@ -64,8 +69,7 @@ bool PlayLayer::init()
 	hero->setPosition(300, 350);
 	hero->Run();
 
-	man = Manager::create();
-	this->addChild(man,3);
+
 
 	auto touchListener = EventListenerTouchOneByOne::create();
 	touchListener->onTouchBegan = CC_CALLBACK_2(PlayLayer::onTouchBegan, this);
@@ -82,45 +86,47 @@ bool PlayLayer::init()
 
 void PlayLayer::initBG(){
 	auto visibleSize = Director::getInstance()->getVisibleSize();
-
+	//解决手机端的背景不显示的问题
+	Point origin = Director::getInstance()->getVisibleOrigin();
 	//初始化雾霾
-	//this->haze = Sprite::create("OverBG.png");
+	this->haze = Sprite::create("OverBG.png");
 	//设置透明度
-	//haze->setOpacity(150);
-	//haze->setPosition(visibleSize.width / 2, visibleSize.height / 2);
-	//this->addChild(haze, 10);
+	haze->setOpacity(0);
+	haze->setPosition(visibleSize.width / 2, visibleSize.height / 2);
+	this->addChild(haze, 10);
 
 	
 	//背景1
-	bgSprite1 = Sprite::create("Map00.png");
-	bgSprite1->setPosition(visibleSize.width / 2, visibleSize.height / 2);
+	bgSprite1 = Sprite::create("bg1.png");
+	bgSprite1->setPosition(origin.x + visibleSize.width / 2, origin.y+visibleSize.height / 2);
 	this->addChild(bgSprite1,1);
 
 	//地面1
-	groundSprite1 = Sprite::create("Ground00.png");
+	groundSprite1 = Sprite::create("ground.png");
 	groundSprite1->setTag(11);
-	groundSprite1->setPosition(visibleSize.width / 2, groundSprite1->getContentSize().height*2);
+	groundSprite1->setPosition(origin.x + visibleSize.width / 2, origin.y + groundSprite1->getContentSize().height / 2);
+	this->man->height = groundSprite1->getPositionY()+groundSprite1->getContentSize().height;
 	auto body1 = PhysicsBody::createBox(groundSprite1->getContentSize());
 	//弹性设为0，奔跑的东西不会颠倒
-	body1->getShape(0)->setRestitution(0);
+	//body1->getShape(0)->setRestitution(0);
 	body1->setDynamic(false);
 	groundSprite1->setPhysicsBody(body1);
 	this->addChild(groundSprite1,2);
 
 
 	//背景2
-	bgSprite2 = Sprite::create("Map01.png");
+	bgSprite2 = Sprite::create("bg2.png");
 	bgSprite2->setPosition(bgSprite1->getContentSize().width + visibleSize.width / 2, visibleSize.height / 2);
 	this->addChild(bgSprite2,1);
 
 	//地面2
-	groundSprite2 = Sprite::create("Ground01.png");
+	groundSprite2 = Sprite::create("ground.png");
 	groundSprite2->setTag(12);
 	groundSprite2->setPosition(bgSprite1->getContentSize().width + visibleSize.width / 2, groundSprite2->getContentSize().height / 2);
 	auto body2 = PhysicsBody::createBox(groundSprite2->getContentSize());
 	body2->setDynamic(false);
 	//弹性设为0，奔跑的东西不会颠倒
-	body2->getShape(0)->setRestitution(0);
+	//body2->getShape(0)->setRestitution(0);
 	groundSprite2->setPhysicsBody(body2);
 	this->addChild(groundSprite2,2);
 
@@ -140,10 +146,12 @@ void PlayLayer::update(float dt){
 	if (posX1 < -mapSize.width / 2){
 		posX1 = mapSize.width + mapSize.width / 2;
 		posX2 = mapSize.width / 2;
+		this->man->height = groundSprite2->getPositionY()+groundSprite2->getContentSize().height;
 	}
 	if (posX2 < -mapSize.width / 2){
 		posX2 = mapSize.width + mapSize.width / 2;
 		posX1 = mapSize.width / 2;
+		this->man->height = groundSprite1->getPositionY()+groundSprite1->getContentSize().height;
 	}
 
 	bgSprite1->setPositionX(posX1);
@@ -155,9 +163,8 @@ void PlayLayer::update(float dt){
 		Director::getInstance()->end();
 	}
 	//围住小雨滴
-	if (this->score >= this->target){
-		this->hero->removeFromParent();
-		this->man->removeFromParent();
+	
+	if (this->score >= 10*this->target){
 		Scene* newScene = GameLayer::createScene();
 		GameLayer* layer = (GameLayer*)(newScene->getChildren().at(0));
 		//设定下一关的初始值
@@ -172,13 +179,13 @@ bool PlayLayer::onTouchBegan(Touch *touch, Event *unused){
 	if (onComputer)
 		this->hero->Jump();
 	else
-		startPoint = touch->getLocation().x;
+		startPoint = touch->getLocation().y;
 	return true;
 }
 
 void PlayLayer::onTouchMoved(Touch *touch, Event *unused){
 	auto location = touch->getLocation();
-	if (location.x > startPoint)
+	if (location.y > startPoint)
 		this->hero->Jump();
 }
 

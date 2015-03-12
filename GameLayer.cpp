@@ -201,72 +201,6 @@ void GameLayer::initCloud()
 //移动雨滴
 void GameLayer::moveRaindrop()
 {
-	/*
-	SquareSprite* next = NULL;
-	int row = m_raindrop->getRow();
-	int col = m_raindrop->getCol();
-	int bestWay = 81;
-	int odd = row%2;
-	for(int i = 0;i<6;++i)//分别向可以走的六个方向调用寻路的递归函数
-	{
-		//每次调用都重新初始化标记数组
-		memset((void*)m_mark,false,m_markSize);
-		//当前坐标也标记为走过了
-		m_mark[row*m_width+col] = true;
-		int next_row = row + choices[odd][i][0];
-		int next_col = col + choices[odd][i][1];
-		SquareSprite* next_sprite = m_matrix[next_row*MATRIX_WIDTH + next_col];
-		if(next_sprite->getSelected())//已经变成云了
-		{
-			continue;
-		}
-		else
-		{
-			int result = findWay(next_row,next_col,1,i);
-			if(result != -1)
-			{
-				if(result < bestWay)
-				{
-					bestWay = result;
-					next = next_sprite;
-				}
-			}
-			else//雨滴成功逃脱了
-			{
-				//更换到endlayer
-				//CCDirector::sharedDirector()->replaceScene(EndLayer::createScene());
-				//Director::getInstance()->end();
-				m_isRun = true;
-			}
-		}
-	}
-	if(bestWay == 81)//如果雨滴被围住了，随便找一个方向走
-	{
-		for(int i = 0;i<6;++i)
-		{
-			int next_row = row + choices[odd][i][0];
-			int next_col = col + choices[odd][i][1];
-			SquareSprite* next_sprite = m_matrix[next_row*MATRIX_WIDTH + next_col];
-			if(!next_sprite->getSelected())//可以走就走
-			{
-				next = next_sprite;
-			}
-		}
-	}
-	if(next)
-	{
-		m_raindrop->runAction(MoveTo::create(0.3, next->getPosition()));
-		m_raindrop->setCol(next->getCol());
-		m_raindrop->setRow(next->getRow());
-	}
-	else{//雨滴被围住了
-		//更换到endlayer
-		Director::getInstance()->end();
-		//CCDirector::sharedDirector()->replaceScene(EndLayer::createScene());
-	}
-	if(m_isRun){
-		Director::getInstance()->end();
-	}*/
 	int row = m_raindrop->getRow();
 	int col = m_raindrop->getCol();
 	int odd = row%2;
@@ -326,50 +260,12 @@ void GameLayer::moveRaindrop()
 			//设定下一关的初始值
 			layer->setLevel(this->level + 1);
 			layer->setTarget(this->target + 500);
-			layer->getHaze()->setOpacity(layer->getHaze()->getOpacity() - 10);
+			layer->getHaze()->setOpacity(layer->getHaze()->getOpacity() - 30);
 			layer->setPhyWorld(newScene->getPhysicsWorld());
-			//newScene->addChild(layer);
 			Director::sharedDirector()->replaceScene(newScene);
 		}
 	}
 
-}
-//雨滴的逃生路线，result代表最短路径的长度，用于筛选最短路径，返回值也是result
-//返回值 -1代表雨滴成功逃脱了，进入结束页面
-//			 81代表雨滴被围住了。。
-//贪心算法，雨滴可以向六个方向移动，当雨滴向某一个方向移动的时候，我们认为他会一直向该方向移动才能找到最佳路径
-//通过最后的tag记录当前行进的方向
-int GameLayer::findWay(int row,int col,int result,int tag)
-{
-	m_mark[row*m_width+col] = true;
-	int odd = row%2;
-	int best_way = 81;
-	if(col <= 0 || col >= 8 || row <= 0 || row >= 8){//走到终点
-		if(result == 1){
-			return -1;//雨滴已经走到了终点
-		}
-		return result;
-	}
-	for(int j = tag;j<6+tag;++j)
-	{
-		int i = j%6;
-		int next_row = row + choices[odd][i][0];
-		int next_col = col + choices[odd][i][1];
-		SquareSprite* next_sprite = m_matrix[next_row*MATRIX_WIDTH + next_col];
-		if(next_sprite->getSelected() || m_mark[next_row*m_width+next_col])//已经变成云了或该点走过了
-		{
-			continue;
-		}
-		else
-		{
-			int res = findWay(next_row,next_col,result+1,i);
-			if(res < best_way)
-			{
-				best_way = res;
-			}
-		}
-	}
-	return best_way;
 }
 //另一种算法，遍历，类似于二叉树层次遍历
 SquareSprite* GameLayer::findNext(SquareSprite* pos)

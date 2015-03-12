@@ -12,7 +12,7 @@ public:
 	CREATE_FUNC(Base);
 
 	//动画
-	cocos2d::Animate* createAnimate(cocos2d::SpriteFrameCache* frameCache);
+	Animate* createAnimate(SpriteFrameCache* frameCache,int n,const char* name);
 	//物理刚体初始化
 	void initBody(int mask);
 	Sprite* sprite;
