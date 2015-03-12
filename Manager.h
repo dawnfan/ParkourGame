@@ -2,11 +2,12 @@
 #define __BaseManager__H__
 
 #include "cocos2d.h"
-#include "Coin.h"
-#include "Barrier.h"
+#include "Base.h"
 
 #define coinTag 2
 #define barrTag 3
+#define WIDTH 800
+#define INTERVAL 150
 
 USING_NS_CC;
 
@@ -15,12 +16,14 @@ public:
 	CREATE_FUNC(Manager);
 	virtual bool init();
 	virtual void update(float dt);
+	int height;
 
 private:
 	void createCoin();
 	void createBarrier();
-	Vector<Barrier*> m_barr;
-	Vector<Coin*> m_coinArr;
+	Vector<Base*> m_barr;
+	Vector<Base*> m_coin;
+	SpriteFrameCache* frameCache;
 
 };/**/
 

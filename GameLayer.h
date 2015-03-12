@@ -46,7 +46,7 @@ private:
 	Point positionOfItem(int row, int col);
 	int findWay(int row,int col,int result,int tag);
 	SquareSprite* findNext(SquareSprite* pos);
-	SquareSprite *GameLayer::spriteOfPoint(Point *point);
+	SquareSprite* spriteOfPoint(Point *point);
 	void initCloud();
 	void moveRaindrop();
 
