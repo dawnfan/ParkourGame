@@ -25,9 +25,10 @@ To do:
  12. 所有资源整合到统一的plist里面
  
 Some note:  
-1. 每次抓住了小雨滴之后雾霾透明度减少30
-2. 由电脑端切换到安卓端发布时，修改`#define onComputer false `，并且在appdelegate里面把windows模拟器大小那句去掉
-3. 
+
+ 1. 每次抓住了小雨滴之后雾霾透明度减少30
+ 2. 由电脑端切换到安卓端发布时，修改`#define onComputer false `，并且在appdelegate里面把windows模拟器大小那句去掉
+ 3. 
 
  
 
