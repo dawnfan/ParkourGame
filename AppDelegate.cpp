@@ -21,7 +21,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
         director->setOpenGLView(glview);
     }
 
-	//glview->setFrameSize(640,360);
+	glview->setFrameSize(640,360);
 
 	//glview->setDesignResolutionSize(720 , 1280 , kResolutionShowAll);
 

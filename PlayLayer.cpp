@@ -3,7 +3,7 @@
 #include "Popup.h"
 
 //电脑上运行的时候设为True，点一下小人就可以跳跃，发布到手机端的时候设成False
-#define onComputer false
+#define onComputer true
 
 PlayLayer::PlayLayer()
 	:score(0),
@@ -131,6 +131,12 @@ void PlayLayer::initBG(){
 	groundSprite2->setPhysicsBody(body2);
 	this->addChild(groundSprite2,2);
 
+	//关卡
+	m_level = LabelTTF::create("Level 1","fonts/JOKERMAN.TTF", 48);
+	m_level->setPosition(visibleSize.width/2,visibleSize.height-30);
+	m_level->setColor(Color3B::YELLOW);
+	this->addChild(m_level,12);
+
 	//分数背景
 	auto board_score = Sprite::create("board_score.png");
 	auto board_target = Sprite::create("board_target.png");
@@ -138,27 +144,27 @@ void PlayLayer::initBG(){
 							 visibleSize.height-board_score->getContentSize().height*2/3);
 	board_target->setPosition(visibleSize.width-board_target->getContentSize().width/2,
 								visibleSize.height-board_target->getContentSize().height*2/3);
-	this->addChild(board_target,12);
-	this->addChild(board_score,12);
+	this->addChild(board_target,13);
+	this->addChild(board_score,13);
 
 	//分数和目标
 	m_score = LabelTTF::create("distance", "fonts/JOKERMAN.TTF", 48);
 	m_score->setPosition(board_score->getContentSize().width/2,
 							visibleSize.height-board_score->getContentSize().height*2/3-10);
 	m_score->setColor(Color3B(139, 248, 178));
-	this->addChild(m_score,12);
+	this->addChild(m_score,13);
 	m_target = LabelTTF::create(CCString::createWithFormat("%d",target)->getCString(), "fonts/JOKERMAN.TTF", 48);
 	m_target->setPosition(visibleSize.width-board_target->getContentSize().width/2,
 							visibleSize.height-board_target->getContentSize().height*2/3-10);
 	m_target->setColor(Color3B(255,209,27));
-	this->addChild(m_target,12);
+	this->addChild(m_target,13);
 	//能量背景
 	auto board_energy = Sprite::create("board_energy.png");
-	board_energy->setPosition(visibleSize.width/2,visibleSize.height-board_energy->getContentSize().height*2/3);
+	board_energy->setPosition(visibleSize.width/2,visibleSize.height-board_energy->getContentSize().height*3/2+10);
 	this->addChild(board_energy,12);
 	//能量
 	proBar = ProgressTimer::create(Sprite::create("energy.png"));
-	proBar->setPosition(visibleSize.width/2+18,visibleSize.height-board_energy->getContentSize().height*2/3);
+	proBar->setPosition(visibleSize.width/2+18,visibleSize.height-board_energy->getContentSize().height*3/2+10);
 	proBar->setMidpoint(Point(0, 0));
 	//从左向右递减
 	proBar->setBarChangeRate(Point(1, 0));
@@ -286,11 +292,12 @@ void PlayLayer::onKeyReleased(EventKeyboard::KeyCode keycode,Event* event){
 
 void PlayLayer::setLevel(unsigned lev){
 	this->level = lev;
+	this->m_level->setString(CCString::createWithFormat("Level %d",this->level)->getCString());
 }
 
 void PlayLayer::setTarget(unsigned tar){
 	this->target = tar;
-	this->m_target->setString(CCString::createWithFormat("%d",target*10)->getCString());
+	this->m_target->setString(CCString::createWithFormat("%d",target)->getCString());
 }
 
 Sprite* PlayLayer::getHaze(){
