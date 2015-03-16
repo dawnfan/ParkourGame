@@ -1,13 +1,14 @@
 #include "PlayLayer.h"
+#include "EndLayer.h"
+#include "Popup.h"
 
 //电脑上运行的时候设为True，点一下小人就可以跳跃，发布到手机端的时候设成False
-#define onComputer true
+#define onComputer false
 
 PlayLayer::PlayLayer()
-	:counter(0),
-	score(0),
+	:score(0),
 	level(1),
-	target(1000),
+	target(3000),
 	animation(NULL),
 	animate(NULL),
 	hero(NULL),
@@ -22,15 +23,10 @@ PlayLayer::PlayLayer()
 
 Scene *PlayLayer::createScene()
 {
-	//auto scene = Scene::create();
-	//auto layer = PlayLayer::create();
-
-	// add following codes
 	auto scene = Scene::createWithPhysics();
 	//最后的参数DEBUGDRAW_ALL影响的是显示的红框
-	scene->getPhysicsWorld()->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);
-	//scene->getPhysicsWorld()->setGravity({0,-500});
-	scene->getPhysicsWorld()->setGravity(Vect(0,-500));
+	//scene->getPhysicsWorld()->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);
+	scene->getPhysicsWorld()->setGravity(Vect(0,-600));
 	/*
 	//创建一个边界
 	Size visibleSize = Director::getInstance()->getVisibleSize();
@@ -69,7 +65,8 @@ bool PlayLayer::init()
 	hero->setPosition(300, 350);
 	hero->Run();
 
-
+	//设置为单点响应
+	setTouchMode(Touch::DispatchMode::ONE_BY_ONE);
 
 	auto touchListener = EventListenerTouchOneByOne::create();
 	touchListener->onTouchBegan = CC_CALLBACK_2(PlayLayer::onTouchBegan, this);
@@ -81,6 +78,11 @@ bool PlayLayer::init()
 	contactListener->onContactBegin = CC_CALLBACK_1(PlayLayer::onContactBegin, this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(contactListener, this);
 
+	//响应键盘消息
+	auto keyListener = EventListenerKeyboard::create();
+	keyListener->onKeyReleased = CC_CALLBACK_2(PlayLayer::onKeyReleased, this);
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(keyListener, this);
+
 	return true;
 }
 
@@ -91,10 +93,9 @@ void PlayLayer::initBG(){
 	//初始化雾霾
 	this->haze = Sprite::create("OverBG.png");
 	//设置透明度
-	haze->setOpacity(0);
+	haze->setOpacity(210);
 	haze->setPosition(visibleSize.width / 2, visibleSize.height / 2);
 	this->addChild(haze, 10);
-
 	
 	//背景1
 	bgSprite1 = Sprite::create("bg1.png");
@@ -130,16 +131,58 @@ void PlayLayer::initBG(){
 	groundSprite2->setPhysicsBody(body2);
 	this->addChild(groundSprite2,2);
 
+	//分数背景
+	auto board_score = Sprite::create("board_score.png");
+	auto board_target = Sprite::create("board_target.png");
+	board_score->setPosition(board_score->getContentSize().width/2,
+							 visibleSize.height-board_score->getContentSize().height*2/3);
+	board_target->setPosition(visibleSize.width-board_target->getContentSize().width/2,
+								visibleSize.height-board_target->getContentSize().height*2/3);
+	this->addChild(board_target,12);
+	this->addChild(board_score,12);
+
+	//分数和目标
+	m_score = LabelTTF::create("distance", "fonts/JOKERMAN.TTF", 48);
+	m_score->setPosition(board_score->getContentSize().width/2,
+							visibleSize.height-board_score->getContentSize().height*2/3-10);
+	m_score->setColor(Color3B(139, 248, 178));
+	this->addChild(m_score,12);
+	m_target = LabelTTF::create(CCString::createWithFormat("%d",target)->getCString(), "fonts/JOKERMAN.TTF", 48);
+	m_target->setPosition(visibleSize.width-board_target->getContentSize().width/2,
+							visibleSize.height-board_target->getContentSize().height*2/3-10);
+	m_target->setColor(Color3B(255,209,27));
+	this->addChild(m_target,12);
+	//能量背景
+	auto board_energy = Sprite::create("board_energy.png");
+	board_energy->setPosition(visibleSize.width/2,visibleSize.height-board_energy->getContentSize().height*2/3);
+	this->addChild(board_energy,12);
+	//能量
+	proBar = ProgressTimer::create(Sprite::create("energy.png"));
+	proBar->setPosition(visibleSize.width/2+18,visibleSize.height-board_energy->getContentSize().height*2/3);
+	proBar->setMidpoint(Point(0, 0));
+	//从左向右递减
+	proBar->setBarChangeRate(Point(1, 0));
+	proBar->setType(ProgressTimer::Type::BAR);
+	proBar->setPercentage(100);
+	
+	this->addChild(proBar,12);
 }
 
 //背景向后移动
 void PlayLayer::update(float dt){
 	int posX1 = bgSprite1->getPositionX();
 	int posX2 = bgSprite2->getPositionX();
+	float timer = proBar->getPercentage();
 
+	//背景向后移动
 	posX1 -= 2;
 	posX2 -= 2;
+	//距离增加
 	this->score += 1;
+	this->m_score->setString(CCString::createWithFormat("%d",score)->getCString());
+	//能量（时间）条减少
+	timer -= 0.05;
+	proBar->setPercentage(timer);
 
 	auto mapSize = bgSprite1->getContentSize();
 
@@ -158,18 +201,27 @@ void PlayLayer::update(float dt){
 	bgSprite2->setPositionX(posX2);
 	groundSprite1->setPositionX(posX1);
 	groundSprite2->setPositionX(posX2);
-	//检查是否游戏结束
-	if (hero->getPositionX()< 0){
-		Director::getInstance()->end();
+	//检查是否游戏结束 移除屏幕外或者时间条到了
+	if (hero->getPositionX()< 0 || timer <= 0){
+		//Director::getInstance()->end();
+		//跳转到失败界面
+		Scene* newScene = EndLayer::createScene();
+		EndLayer* layer = (EndLayer*)(newScene->getChildren().at(0));
+		layer->setNext(false,0,0);
+		layer->end_score->setString(CCString::createWithFormat("%d",score)->getCString());
+		layer->target->setString(CCString::createWithFormat("%d",target)->getCString());
+		layer->level->setString(CCString::createWithFormat("%d",level)->getCString());
+		Director::sharedDirector()->replaceScene(newScene);
 	}
 	//围住小雨滴
 	
-	if (this->score >= 10*this->target){
+	if (this->score >= this->target){
 		Scene* newScene = GameLayer::createScene();
 		GameLayer* layer = (GameLayer*)(newScene->getChildren().at(0));
 		//设定下一关的初始值
 		layer->setLevel(this->level);
 		layer->setTarget(this->target);
+		layer->setScore(this->score);
 		Director::sharedDirector()->replaceScene(newScene);
 	}
 }
@@ -198,7 +250,7 @@ bool PlayLayer::onContactBegin(PhysicsContact& contact)
 	if (body_1->getTag() == 2 && body_2->getTag() == 1){
 		if (body_1->isVisible()){
 			runEffect(body_2);
-			this->counter++;
+			this->proBar->setPercentage(proBar->getPercentage() + 10);
 		}
 		body_1->setVisible(false);
 	}
@@ -226,12 +278,19 @@ void PlayLayer::runEffect(Sprite* coin){
 	this->addChild(particleStars, 20);
 }
 
+void PlayLayer::onKeyReleased(EventKeyboard::KeyCode keycode,Event* event){
+	if(keycode == EventKeyboard::KeyCode::KEY_BACKSPACE){
+		Director::sharedDirector()->pushScene(Popup::createScene());
+	}
+}
+
 void PlayLayer::setLevel(unsigned lev){
 	this->level = lev;
 }
 
 void PlayLayer::setTarget(unsigned tar){
 	this->target = tar;
+	this->m_target->setString(CCString::createWithFormat("%d",target*10)->getCString());
 }
 
 Sprite* PlayLayer::getHaze(){

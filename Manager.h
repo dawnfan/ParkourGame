@@ -7,7 +7,7 @@
 #define coinTag 2
 #define barrTag 3
 #define WIDTH 800
-#define INTERVAL 150
+#define INTERVAL 100
 
 USING_NS_CC;
 

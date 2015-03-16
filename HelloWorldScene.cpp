@@ -101,7 +101,8 @@ bool HelloWorld::init()
 void HelloWorld::aboutFunc(Ref* pSender)
 {
 	CCLOG("about_Menu item clicked");
-	Director::sharedDirector()->replaceScene(GameAbout::createScene());
+	Director::sharedDirector()->pushScene(GameAbout::createScene());
+	//Director::sharedDirector()->replaceScene();
 }
 //开始游戏按键的回调函数
 void HelloWorld::startGame(cocos2d::Ref* pSender)

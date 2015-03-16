@@ -1,4 +1,6 @@
 #include "GameLayer.h"
+#include "Popup.h"
+#include "EndLayer.h"
 
 
 #define MATRIX_WIDTH (9)
@@ -50,6 +52,7 @@ Scene *GameLayer::createScene()
 	scene->addChild(layer);
 	return scene;
 }
+
 bool GameLayer::init()
 {
 	if (!Layer::init()) {
@@ -92,6 +95,9 @@ bool GameLayer::init()
 	Point position = positionOfItem(4, 4);
 	m_raindrop->setPosition(position);
 	addChild(m_raindrop,2);
+	
+	//设置为单点响应
+	setTouchMode(Touch::DispatchMode::ONE_BY_ONE);
 	// bind touch event实现触摸效果
 	auto touchListener = EventListenerTouchOneByOne::create();
 	touchListener->onTouchBegan = CC_CALLBACK_2(GameLayer::onTouchBegan, this);
@@ -119,24 +125,13 @@ Point GameLayer::positionOfItem(int row, int col)
 void GameLayer::onKeyReleased(EventKeyboard::KeyCode keycode,Event* event)
 {
 	if(keycode == EventKeyboard::KeyCode::KEY_BACKSPACE)
-	{
-		/*Scene* newScene = Pause::createScene();
-		Pause* layer = Pause::create();
-		layer->scene_num = 1;
-		newScene->addChild(layer);
-		Director::sharedDirector()->pushScene(newScene);*/
+	{//转入暂停页面
+		CCDirector::sharedDirector()->pushScene(Popup::createScene());
 	}
 }
 //获取点击事件
 bool GameLayer::onTouchBegan(Touch *touch, Event *unused)
 {
-	/*
-	if(exit)
-	{
-		exit->removeFromParentAndCleanup(true);
-		exit = NULL;
-	}*/
-	//m_srcSushi = NULL;
 	if (m_isTouchEnable ) 
 	{
 		//点击出现云彩
@@ -225,15 +220,15 @@ void GameLayer::moveRaindrop()
 		m_raindrop->setRow(next->getRow());
 		if(m_isRun){
 			//雨滴逃脱
-			//更换到下一关
-			Scene* newScene = PlayLayer::createScene();
-			PlayLayer* layer = (PlayLayer*)(newScene->getChildByTag(13));
-			//设定下一关的初始值
-			layer->setLevel(this->level+1);
-			layer->setTarget(this->target + 500);
-			layer->setPhyWorld(newScene->getPhysicsWorld());
-			//newScene->addChild(layer);
-			Director::sharedDirector()->replaceScene(newScene); 
+			//转换到胜利页面，指示没有抓住
+			Scene* newScene = EndLayer::createScene();
+			EndLayer* layer = (EndLayer*)(newScene->getChildren().at(0));
+			layer->setNext(true,this->level + 1,this->target + 500);
+			layer->prompt->setString("YOU DIDN'T CATCH THE DROP !");
+			layer->end_score->setString(CCString::createWithFormat("%d",this->score)->getCString());
+			layer->level->setString(CCString::createWithFormat("%d",this->level)->getCString());
+			layer->target->setString(CCString::createWithFormat("%d",this->target)->getCString());
+			Director::sharedDirector()->replaceScene(newScene);
 		}
 	}else{
 		//雨滴被围住了,随便找一个方向走
@@ -254,14 +249,14 @@ void GameLayer::moveRaindrop()
 			m_raindrop->setRow(next->getRow());
 		}
 		else{
-			//下一关
-			Scene* newScene = PlayLayer::createScene();
-			PlayLayer* layer = (PlayLayer*)(newScene->getChildByTag(13));
-			//设定下一关的初始值
-			layer->setLevel(this->level + 1);
-			layer->setTarget(this->target + 500);
-			layer->getHaze()->setOpacity(layer->getHaze()->getOpacity() - 30);
-			layer->setPhyWorld(newScene->getPhysicsWorld());
+			//转换到胜利页面，指示没有抓住
+			Scene* newScene = EndLayer::createScene();
+			EndLayer* layer = (EndLayer*)(newScene->getChildren().at(0));
+			layer->setNext(true,this->level + 1,this->target + 500);
+			layer->prompt->setString("YOU GET EXTRA ENERGY !");
+			layer->end_score->setString(CCString::createWithFormat("%d",this->score)->getCString());
+			layer->level->setString(CCString::createWithFormat("%d",this->level)->getCString());
+			layer->target->setString(CCString::createWithFormat("%d",this->target)->getCString());
 			Director::sharedDirector()->replaceScene(newScene);
 		}
 	}
@@ -310,4 +305,8 @@ void GameLayer::setLevel(unsigned lev){
 
 void GameLayer::setTarget(unsigned tar){
 	this->target = tar;
+}
+
+void GameLayer::setScore(unsigned sco){
+	this->score = sco;
 }

@@ -107,7 +107,7 @@ void Runner::Jump(){
 	if (m_state == running){
 		m_state = jumpUp;
 
-		auto mass = this->getPhysicsBody()->getMass() * 350;
+		auto mass = this->getPhysicsBody()->getMass() * 450;
 
 		this->getPhysicsBody()->applyImpulse(Vect(0, mass));
 

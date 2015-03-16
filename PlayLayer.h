@@ -5,7 +5,7 @@
 #include "Runner.h"
 #include "Manager.h"
 #include "GameLayer.h"
-#include "BackGround.h"
+
 
 USING_NS_CC;
 
@@ -21,6 +21,8 @@ public:
 	virtual bool onTouchBegan(Touch *touch, Event *unused) override;
 	virtual void onTouchMoved(Touch *touch, Event *unused) override;
 	bool onContactBegin(PhysicsContact& contact);
+	//返回键响应
+	void onKeyReleased(EventKeyboard::KeyCode keycode,Event* event);
 	void setPhyWorld(PhysicsWorld* world){ m_world = world; }
 
 	//用update函数让地图滚动
@@ -45,8 +47,6 @@ private:
 	Sprite* groundSprite2;
 	//用于管理金币等
 	Manager* man;
-	//金币数量
-	int counter;
 	//触摸起始点
 	int startPoint;
 	//得分，决定是否过关
@@ -57,12 +57,18 @@ private:
 	unsigned level;
 	//本关目标分数
 	unsigned target;
+	//显示：当前关数，目标分数，得分
+	LabelTTF* m_level;
+	LabelTTF* m_target;
+	LabelTTF* m_score;
 	
 
 	//初始化背景
 	void initBG();
 	//吃金币粒子特效
 	void runEffect(Sprite* coin);
+	//进度条
+	ProgressTimer* proBar;
 };
 
 #endif // __PLAYLAYER_H__
