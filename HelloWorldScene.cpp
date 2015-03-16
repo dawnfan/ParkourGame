@@ -131,7 +131,7 @@ void HelloWorld::setOptions(cocos2d::Ref* pSender)
 //ÏìÓ¦°²×¿·µ»Ø¼ü
 void HelloWorld::onKeyReleased(EventKeyboard::KeyCode keycode,Event* event)
 {
-	exit = LabelTTF::create("Press back button again to exit", "fonts/fzmwt.ttf", 15);
+	exit = LabelTTF::create("Press back button again to exit", "fonts/MSYH.TTF", 48);
 	if(keycode == EventKeyboard::KeyCode::KEY_BACKSPACE)
 	{
 		if(!touchedBack)
@@ -139,8 +139,9 @@ void HelloWorld::onKeyReleased(EventKeyboard::KeyCode keycode,Event* event)
 			Size visibleSize = Director::getInstance()->getVisibleSize();
 			Point origin = Director::getInstance()->getVisibleOrigin();
 			exit->runAction(CCFadeOut::create(2.0));
+			exit->setColor(Color3B::BLACK);
 			exit->setPosition(Point(origin.x + visibleSize.width/2,
-				origin.y + visibleSize.height/2));
+				origin.y + visibleSize.height-60));
 			this->addChild(exit);
 			touchedBack = true;
 		}
