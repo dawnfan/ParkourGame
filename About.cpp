@@ -44,10 +44,11 @@ void GameAbout::onKeyReleased(EventKeyboard::KeyCode keycode,Event* event)
 {
 	if(keycode == EventKeyboard::KeyCode::KEY_BACKSPACE)
 	{
-		Scene* newScene = HelloWorld::createScene();
+		/*Scene* newScene = HelloWorld::createScene();
 		HelloWorld* layer = HelloWorld::create();
 		newScene->addChild(layer);
-		Director::sharedDirector()->pushScene(newScene);
+		Director::sharedDirector()->pushScene(newScene);*/
+		Director::sharedDirector()->popScene();
 	}
 }
 
@@ -55,6 +56,6 @@ void GameAbout::onKeyReleased(EventKeyboard::KeyCode keycode,Event* event)
 bool GameAbout::onTouchBegan(Touch *touch, Event *unused)
 {
 	CCLOG("here");
-	Director::sharedDirector()->replaceScene(HelloWorld::createScene());
+	Director::sharedDirector()->popScene();
 	return false;
 }

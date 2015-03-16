@@ -8,9 +8,9 @@ bool Manager::init(){
 		return false;
 	}
 	frameCache = SpriteFrameCache::getInstance();
-	frameCache->addSpriteFramesWithFile("parkour.plist", "parkour.png");
-	createCoin();
+	frameCache->addSpriteFramesWithFile("hazefight.plist", "hazefight.png");
 	createBarrier();
+	createCoin();
 	this->height = 60;
 	this->scheduleUpdate();
 	return true;
@@ -19,9 +19,9 @@ bool Manager::init(){
 void Manager::createCoin(){
 	for (int i = 0; i < 5; ++i){
 		auto coin = Base::create();
-		coin->sprite = Sprite::createWithSpriteFrameName("coin0.png");
+		coin->sprite = Sprite::createWithSpriteFrameName("waterDrop0.png");
 		coin->addChild(coin->sprite);
-		coin->sprite->runAction(coin->createAnimate(frameCache,6,"coin"));
+		coin->sprite->runAction(coin->createAnimate(frameCache,4,"waterDrop"));
 		coin->initBody(0);
 		coin->setVisible(false);
 		coin->setTag(coinTag);
@@ -33,7 +33,8 @@ void Manager::createCoin(){
 void Manager::createBarrier(){
 	for (int i = 0; i < 5; ++i){
 		auto barr = Base::create();
-		barr->sprite = Sprite::createWithSpriteFrameName("rock.png");
+		//barr->sprite = Sprite::create("barrier.png");
+		barr->sprite = Sprite::createWithSpriteFrameName("barrier.png");
 		barr->addChild(barr->sprite);
 		barr->initBody(1);
 		barr->setVisible(false);
@@ -48,7 +49,7 @@ void Manager::update(float dt){
 	for (Vector<Base*>::iterator iter = this->m_coin.begin(); iter != this->m_coin.end(); ++iter){
 		Base* coin = *iter;
 		//不在屏幕
-		if (coin->getPositionX() < -coin->getContentSize().width / 2){
+		if (coin->getPositionX() < -coin->getContentSize().width ){
 			coin->setVisible(false);
 		}
 		//要是不可见，要不就是不在屏幕里，要不就是被碰撞了
@@ -85,7 +86,7 @@ void Manager::update(float dt){
 	
 	for (Vector<Base*>::iterator iter = this->m_barr.begin(); iter != this->m_barr.end(); ++iter){
 		Base* barr = *iter;
-		if (barr->getPositionX() < -barr->getContentSize().width / 2)
+		if (barr->getPositionX() < -barr->getContentSize().width-100)
 			barr->setVisible(false);
 		if (!barr->isVisible())
 			setNum++;
