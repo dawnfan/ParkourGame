@@ -1,6 +1,11 @@
 #include "EndLayer.h"
 #include "HelloWorldScene.h"
+#include "GameWin.h"
 
+EndLayer::EndLayer():
+	hazeCount(0),
+	catchedDrop(false)
+{}
 
 Scene *EndLayer::createScene()
 {
@@ -20,21 +25,21 @@ bool EndLayer::init(){
 	end->setPosition(ccp(screenSize.width/2,screenSize.height/2));
 	this->addChild(end);
 	//关卡
-	level = LabelTTF::create("0", "fonts/MSYH.TTF", 60);
+	level = LabelTTF::create("0", "fonts/msyh.ttf", 60);
 	level->setPosition(screenSize.width/2+80,screenSize.height-58);
 	level->setColor(Color3B(232,150,121));
 	end->addChild(level);
 	//指示语
-	prompt = LabelTTF::create("YOU ARE STOPPED HERE !","fonts/MSYH.TTF",60);
+	prompt = LabelTTF::create("YOU ARE STOPPED HERE !","fonts/msyh.ttf",60);
 	prompt->setPosition(screenSize.width/2,screenSize.height-138);
 	prompt->setColor(Color3B(232,150,121));
 	end->addChild(prompt);
 	//分数
-	end_score = LabelTTF::create("distance", "fonts/JOKERMAN.TTF", 48);
+	end_score = LabelTTF::create("distance", "fonts/jokerman.ttf", 48);
 	end_score->setPosition(screenSize.width/2+100,screenSize.height/2+100);
 	end_score->setColor(Color3B(139, 248, 178));
 	end->addChild(end_score);
-	target = LabelTTF::create("target", "fonts/JOKERMAN.TTF", 48);
+	target = LabelTTF::create("target", "fonts/jokerman.ttf", 48);
 	target->setPosition(screenSize.width/2+100,screenSize.height/2-40);
 	target->setColor(Color3B(255,209,27));
 	end->addChild(target);
@@ -53,6 +58,8 @@ void EndLayer::setNext(bool win , unsigned n_lev=0 , unsigned n_tar=0) {
 	MenuItemImage* btn_to;
 	if (win)
 	{
+		//开启hazeUpdate
+		this->schedule(schedule_selector(EndLayer::hazeUpdate),0.02,14,0.05);
 		end->setTexture(TextureCache::sharedTextureCache()->addImage("main_game/bg_success.png"));
 		btn_to = MenuItemImage::create(
 			"main_game/next1.png",
@@ -60,6 +67,18 @@ void EndLayer::setNext(bool win , unsigned n_lev=0 , unsigned n_tar=0) {
 			CC_CALLBACK_1(EndLayer::NextFunc, this));
 		this->n_level = n_lev;
 		this->n_target = n_tar;
+		//胜利界面不需要分数和目标
+		end->removeChild(target,false);
+		end->removeChild(end_score,false);
+		//this->target->setString("100");
+		//this->end_score->setString("100");
+		//显示haze
+		hazeCount = 15;
+		auto h=n_level<7?100-(n_level-1)*15:0;
+		haze = LabelTTF::create(CCString::createWithFormat("%d",h+hazeCount)->getCString(),"fonts/scoreboard.ttf",80);
+		haze->setColor(Color3B::RED);
+		haze->setPosition(screenSize.width/2+50,screenSize.height/2+50);
+		end->addChild(haze);
 	}
 	else{
 		btn_to = MenuItemImage::create(
@@ -81,16 +100,39 @@ void EndLayer::setNext(bool win , unsigned n_lev=0 , unsigned n_tar=0) {
 	end->addChild(menu);
 }
 
+void EndLayer::hazeUpdate(float dt){
+	if (this->hazeCount > 0)
+	{
+		hazeCount--;
+		haze->setString(CCString::createWithFormat("%d",100-(n_level-1)*15+hazeCount)->getCString());
+	}
+	else
+	{
+		return;
+	}
+}
+
 void EndLayer::NextFunc(cocos2d::Ref* pSender){
 	//下一关
-	Scene* newScene = PlayLayer::createScene();
-	PlayLayer* layer = (PlayLayer*)(newScene->getChildByTag(13));
-	//设定下一关的初始值
-	layer->setLevel(this->n_level);
-	layer->setTarget(this->n_target);
-	layer->getHaze()->setOpacity(layer->getHaze()->getOpacity() - 30);
-	layer->setPhyWorld(newScene->getPhysicsWorld());
-	Director::sharedDirector()->replaceScene(newScene);
+	int nextHaze = 210 - 30 * (n_level - 1);
+	if (nextHaze <= 0){
+		Scene* newScene = GameWin::createScene();
+		GameWin* layer = (GameWin*)(newScene->getChildByTag(13));
+		Director::sharedDirector()->replaceScene(newScene);
+	}
+	else{
+		Scene* newScene = PlayLayer::createScene();
+		PlayLayer* layer = (PlayLayer*)(newScene->getChildByTag(13));
+		//设定下一关的初始值
+		if (catchedDrop){
+			layer->getProbar()->setPercentage(100);
+		}
+		layer->setLevel(this->n_level);
+		layer->setTarget(this->n_target);
+		layer->getHaze()->setOpacity(nextHaze);
+		layer->setPhyWorld(newScene->getPhysicsWorld());
+		Director::sharedDirector()->replaceScene(newScene);
+	}
 }
 
 void EndLayer::RetryFunc(cocos2d::Ref* pSender){
@@ -109,4 +151,8 @@ void EndLayer::onKeyReleased(EventKeyboard::KeyCode keycode,Event* event)
 	{
 		Director::sharedDirector()->replaceScene(CCTransitionCrossFade::create(0.2,HelloWorld::createScene()));
 	}
+}
+
+void EndLayer::setCatchedDrop(){
+	this->catchedDrop = true;
 }

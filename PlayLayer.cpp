@@ -3,7 +3,7 @@
 #include "Popup.h"
 
 //电脑上运行的时候设为True，点一下小人就可以跳跃，发布到手机端的时候设成False
-#define onComputer false
+#define onComputer true
 
 PlayLayer::PlayLayer()
 	:score(0),
@@ -132,7 +132,7 @@ void PlayLayer::initBG(){
 	this->addChild(groundSprite2,2);
 
 	//关卡
-	m_level = LabelTTF::create("Level 1","fonts/JOKERMAN.TTF", 48);
+	m_level = LabelTTF::create("Level 1","fonts/jokerman.ttf", 48);
 	m_level->setPosition(visibleSize.width/2,visibleSize.height-30);
 	m_level->setColor(Color3B::YELLOW);
 	this->addChild(m_level,12);
@@ -148,12 +148,12 @@ void PlayLayer::initBG(){
 	this->addChild(board_score,13);
 
 	//分数和目标
-	m_score = LabelTTF::create("distance", "fonts/JOKERMAN.TTF", 48);
+	m_score = LabelTTF::create("distance", "fonts/jokerman.ttf", 48);
 	m_score->setPosition(board_score->getContentSize().width/2,
 							visibleSize.height-board_score->getContentSize().height*2/3-10);
 	m_score->setColor(Color3B(139, 248, 178));
 	this->addChild(m_score,13);
-	m_target = LabelTTF::create(CCString::createWithFormat("%d",target)->getCString(), "fonts/JOKERMAN.TTF", 48);
+	m_target = LabelTTF::create(CCString::createWithFormat("%d",target)->getCString(), "fonts/jokerman.ttf", 48);
 	m_target->setPosition(visibleSize.width-board_target->getContentSize().width/2,
 							visibleSize.height-board_target->getContentSize().height*2/3-10);
 	m_target->setColor(Color3B(255,209,27));
@@ -169,9 +169,9 @@ void PlayLayer::initBG(){
 	//从左向右递减
 	proBar->setBarChangeRate(Point(1, 0));
 	proBar->setType(ProgressTimer::Type::BAR);
-	proBar->setPercentage(100);
+	proBar->setPercentage(60);
 	
-	this->addChild(proBar,13);
+	this->addChild(proBar,15);
 }
 
 //背景向后移动
@@ -181,13 +181,13 @@ void PlayLayer::update(float dt){
 	float timer = proBar->getPercentage();
 
 	//背景向后移动
-	posX1 -= 2;
-	posX2 -= 2;
+	posX1 -= BACKGROUND_SPEED;
+	posX2 -= BACKGROUND_SPEED;
 	//距离增加
 	this->score += 1;
 	this->m_score->setString(CCString::createWithFormat("%d",score)->getCString());
 	//能量（时间）条减少
-	timer -= 0.05;
+	timer -= 0.07;
 	proBar->setPercentage(timer);
 
 	auto mapSize = bgSprite1->getContentSize();
@@ -310,4 +310,8 @@ void PlayLayer::setTarget(unsigned tar){
 
 Sprite* PlayLayer::getHaze(){
 	return this->haze;
+}
+
+ProgressTimer* PlayLayer::getProbar(){
+	return this->proBar;
 }

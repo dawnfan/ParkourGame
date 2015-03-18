@@ -6,7 +6,7 @@
 #include "Manager.h"
 #include "GameLayer.h"
 
-
+#define BACKGROUND_SPEED 4
 USING_NS_CC;
 
 class PlayLayer : public cocos2d::Layer
@@ -30,6 +30,7 @@ public:
 
 	void setLevel(unsigned lev);
 	void setTarget(unsigned tar);
+	ProgressTimer* getProbar();
 	Sprite* getHaze();
 private:
 	//物理世界

@@ -1,7 +1,4 @@
 #include "GameLayer.h"
-#include "Popup.h"
-#include "EndLayer.h"
-
 
 #define MATRIX_WIDTH (9)
 #define MATRIX_HEIGHT (9)
@@ -252,6 +249,7 @@ void GameLayer::moveRaindrop()
 			//转换到胜利页面，指示没有抓住
 			Scene* newScene = EndLayer::createScene();
 			EndLayer* layer = (EndLayer*)(newScene->getChildren().at(0));
+			layer->setCatchedDrop();
 			layer->setNext(true,this->level + 1,this->target + 500);
 			layer->prompt->setString("YOU GET EXTRA ENERGY !");
 			layer->end_score->setString(CCString::createWithFormat("%d",this->score)->getCString());

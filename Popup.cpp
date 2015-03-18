@@ -14,34 +14,32 @@ bool Popup::init(){
 	if (!Layer::init()) {
 		return false;
 	}
-
 	Size screenSize = Director::sharedDirector()->getVisibleSize();
 	auto popup = Sprite::create("main_game/bg_pop.png");
-	popup->setPosition(ccp(screenSize.width/2,screenSize.height/2));
+	popup->setPosition(ccp(screenSize.width / 2, screenSize.height / 2));
 	this->addChild(popup);
 
 	auto popup_home = MenuItemImage::create(
 		"main_game/home1.png",
 		"main_game/home2.png",
 		CC_CALLBACK_1(Popup::ReturnToMainFunc, this));
-	popup_home->setPosition(screenSize.width/2+popup_home->getContentSize().width+20,
-							screenSize.height/2-popup_home->getContentSize().height/4);
+	popup_home->setPosition(screenSize.width / 2 + popup_home->getContentSize().width + 20,
+		screenSize.height / 2 - popup_home->getContentSize().height / 4);
 	auto popup_info = MenuItemImage::create(
 		"menu/about1.png",
 		"menu/about2.png",
 		CC_CALLBACK_1(Popup::AboutFunc, this));
-	popup_info->setPosition(screenSize.width/2-popup_info->getContentSize().width-20,
-							screenSize.height/2-popup_info->getContentSize().height/4);
+	popup_info->setPosition(screenSize.width / 2 - popup_info->getContentSize().width - 20,
+		screenSize.height / 2 - popup_info->getContentSize().height / 4);
 	auto popup_continue = MenuItemImage::create(
 		"main_game/back1.png",
 		"main_game/back2.png",
 		CC_CALLBACK_1(Popup::BackFunc, this));
-	popup_continue->setPosition(screenSize.width/2,screenSize.height/2-popup_continue->getContentSize().height/2);
+	popup_continue->setPosition(screenSize.width / 2, screenSize.height / 2 - popup_continue->getContentSize().height / 2);
 
-	auto menu = Menu::create(popup_home,popup_info,popup_continue,NULL);
-	menu->setPosition(0,0);
+	auto menu = Menu::create(popup_home, popup_info, popup_continue, NULL);
+	menu->setPosition(0, 0);
 	popup->addChild(menu);
-
 	//ÏìÓ¦¼üÅÌÏûÏ¢
 	auto keyListener = EventListenerKeyboard::create();
 	keyListener->onKeyReleased = CC_CALLBACK_2(Popup::onKeyReleased, this);
