@@ -25,8 +25,7 @@ bool GameWin::init(){
 		"main_game/home1.png",
 		"main_game/home2.png",
 		CC_CALLBACK_1(GameWin::ReturnToMainFunc, this));
-	GameWin_home->setPosition(screenSize.width / 2 + GameWin_home->getContentSize().width + 20,
-		screenSize.height / 2 - GameWin_home->getContentSize().height / 4);
+	GameWin_home->setPosition(screenSize.width - GameWin_home->getContentSize().width * 3 / 2 - 20, GameWin_home->getContentSize().height / 2);
 
 	auto menu = Menu::create(GameWin_home, NULL);
 	menu->setPosition(0, 0);

@@ -3,7 +3,7 @@
 #include "Popup.h"
 
 //电脑上运行的时候设为True，点一下小人就可以跳跃，发布到手机端的时候设成False
-#define onComputer true
+#define onComputer false
 
 PlayLayer::PlayLayer()
 	:score(0),
@@ -187,7 +187,7 @@ void PlayLayer::update(float dt){
 	this->score += 1;
 	this->m_score->setString(CCString::createWithFormat("%d",score)->getCString());
 	//能量（时间）条减少
-	timer -= 0.07;
+	timer -= 0.05;
 	proBar->setPercentage(timer);
 
 	auto mapSize = bgSprite1->getContentSize();

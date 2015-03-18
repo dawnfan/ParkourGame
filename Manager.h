@@ -26,8 +26,7 @@ private:
 	Vector<Base*> m_barr;
 	Vector<Base*> m_coin;
 	SpriteFrameCache* frameCache;
-	Base* bug;
-
+	Vector<Base*> m_bug;
 };/**/
 
 #endif
