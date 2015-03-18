@@ -3,7 +3,7 @@
 #include "Popup.h"
 
 //电脑上运行的时候设为True，点一下小人就可以跳跃，发布到手机端的时候设成False
-#define onComputer true
+#define onComputer false
 
 PlayLayer::PlayLayer()
 	:score(0),
@@ -171,7 +171,7 @@ void PlayLayer::initBG(){
 	proBar->setType(ProgressTimer::Type::BAR);
 	proBar->setPercentage(100);
 	
-	this->addChild(proBar,12);
+	this->addChild(proBar,13);
 }
 
 //背景向后移动
@@ -257,6 +257,14 @@ bool PlayLayer::onContactBegin(PhysicsContact& contact)
 		if (body_1->isVisible()){
 			runEffect(body_2);
 			this->proBar->setPercentage(proBar->getPercentage() + 10);
+		}
+		body_1->setVisible(false);
+	}
+	//碰到虫子
+	else if (body_1->getTag() == 4 && body_2->getTag() == 1){
+		if (body_1->isVisible()){
+			body_2->runAction(Blink::create(0.5,3));
+			this->proBar->setPercentage(proBar->getPercentage() - 10);
 		}
 		body_1->setVisible(false);
 	}

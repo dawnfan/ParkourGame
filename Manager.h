@@ -6,6 +6,7 @@
 
 #define coinTag 2
 #define barrTag 3
+#define bugTag 4
 #define WIDTH 800
 #define INTERVAL 100
 
@@ -21,9 +22,11 @@ public:
 private:
 	void createCoin();
 	void createBarrier();
+	void createBug();
 	Vector<Base*> m_barr;
 	Vector<Base*> m_coin;
 	SpriteFrameCache* frameCache;
+	Base* bug;
 
 };/**/
 

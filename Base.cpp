@@ -28,7 +28,7 @@ Animate* Base::createAnimate(SpriteFrameCache* frameCache,int n,const char* name
 
 	animation->setLoops(-1);
 
-	animation->setDelayPerUnit(0.1f);
+	animation->setDelayPerUnit(0.3f);
 
 	/* 将动画包装成一个动作 */
 	auto action = Animate::create(animation);
@@ -41,7 +41,9 @@ void Base::initBody(int mask){
 	phyBody->getShape(0)->setDensity(1000000);
 	phyBody->getShape(0)->setMass(10000);
 	phyBody->getShape(0)->setMaterial(PHYSICSBODY_MATERIAL_DEFAULT);
-	phyBody->setCategoryBitmask(1);
+	//phyBody->setDynamic(false);
+
+	//phyBody->setCategoryBitmask(1);
 	//设置为0，不会和奔跑的小人发生碰撞，因为是两个碰撞物体的掩码值逻辑与
 	phyBody->setCollisionBitmask(mask);
 	phyBody->setContactTestBitmask(1);
