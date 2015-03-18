@@ -88,7 +88,8 @@ void Runner::initBody(){
 	runerBody->getShape(0)->setRestitution(0);
 	//设置可以碰撞检测
 	runerBody->setCategoryBitmask(1);
-	runerBody->setCollisionBitmask(1);
+	runerBody->setCollisionBitmask(0x02);
+	//runerBody->setCollisionBitmask(1);
 	runerBody->setContactTestBitmask(1);
 
 	//绑定刚体

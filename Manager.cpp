@@ -10,6 +10,7 @@ bool Manager::init(){
 	frameCache = SpriteFrameCache::getInstance();
 	frameCache->addSpriteFramesWithFile("hazefight.plist", "hazefight.png");
 	createBarrier();
+	createBug();
 	createCoin();
 	this->height = 60;
 	this->scheduleUpdate();
@@ -36,7 +37,8 @@ void Manager::createBarrier(){
 		//barr->sprite = Sprite::create("barrier.png");
 		barr->sprite = Sprite::createWithSpriteFrameName("barrier.png");
 		barr->addChild(barr->sprite);
-		barr->initBody(1);
+		barr->initBody(0xFF);
+		//barr->initBody(1);
 		barr->setVisible(false);
 		barr->setTag(barrTag);
 		this->addChild(barr);
@@ -75,15 +77,14 @@ void Manager::update(float dt){
 				posY = height + CCRANDOM_0_1() * INTERVAL;
 				posX += WIDTH;
 			}
-			i++;//重置金币个数记录
-			//
+			i++;
 			coin->setVisible(true);
 			coin->setPosition(posX, posY);
 		}
 	}
 	setNum = 0;
-	//障碍物
 	
+	//障碍物
 	for (Vector<Base*>::iterator iter = this->m_barr.begin(); iter != this->m_barr.end(); ++iter){
 		Base* barr = *iter;
 		if (barr->getPositionX() < -barr->getContentSize().width-100)
@@ -96,13 +97,40 @@ void Manager::update(float dt){
 	if (setNum == 5){
 		float posX = WIDTH+400;
 		float posY;
-		for (Vector<Base*>::iterator iter = this->m_barr.begin(); iter != this->m_barr.end(); ++iter){
+		int i = 0;
+		for (Vector<Base*>::iterator iter = this->m_barr.begin(); iter != this->m_barr.end(); ++iter,++i){
 			auto barr = *iter;
 			posX += WIDTH;
 			posY = height + CCRANDOM_0_1() * INTERVAL;
+			if (i == 1){
+				bug->setPosition(posX, posY+160);
+				bug->setVisible(true);
+			}
 			barr->setPosition(posX, posY);
 			barr->setVisible(true);
 		}
 	}
 	
+	//bug
+	if (bug->getPositionX() < -bug->getContentSize().width - 100)
+		bug->setVisible(false);
+	//比背景移动的快一倍
+	bug->setPositionX(bug->getPositionX() - 6);
+	
+}
+
+void Manager::createBug(){
+	bug = Base::create();
+	bug->sprite = Sprite::createWithSpriteFrameName("bug0.png");
+	bug->addChild(bug->sprite);
+	bug->sprite->runAction(bug->createAnimate(frameCache, 4, "bug"));
+	auto phyBody = PhysicsBody::createBox(bug->sprite->getContentSize());
+	phyBody->getShape(0)->setMaterial(PHYSICSBODY_MATERIAL_DEFAULT);
+	phyBody->setCollisionBitmask(0x02);
+	phyBody->setContactTestBitmask(1);
+	phyBody->setRotationEnable(false);
+	bug->setPhysicsBody(phyBody);
+	bug->setVisible(false);
+	bug->setTag(bugTag);
+	this->addChild(bug);
 }
