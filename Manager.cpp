@@ -81,6 +81,11 @@ void Manager::update(float dt){
 			i++;
 			coin->setVisible(true);
 			coin->setPosition(posX, posY);
+			if (i == 0){
+				auto bug = *(m_bug.begin() + 1);
+				bug->setPosition(posX, posY + 30);
+				bug->setVisible(true);
+			}
 		}
 	}
 	setNum = 0;
@@ -103,7 +108,8 @@ void Manager::update(float dt){
 			auto barr = *iter;
 			posX += WIDTH;
 			posY = height + CCRANDOM_0_1() * INTERVAL;
-			if (i == 1){
+			if (i == 3){
+				auto bug = *(m_bug.begin());
 				bug->setPosition(posX, posY+160);
 				bug->setVisible(true);
 			}
@@ -112,25 +118,34 @@ void Manager::update(float dt){
 		}
 	}
 	
-	//bug
-	if (bug->getPositionX() < -bug->getContentSize().width - 100)
-		bug->setVisible(false);
-	bug->setPositionX(bug->getPositionX() - (4+BACKGROUND_SPEED));
+	//bug“∆∂Ø
+	for (Vector<Base*>::iterator iter = this->m_bug.begin(); iter != this->m_bug.end(); ++iter){
+		auto bug = *iter;
+		if (bug->getPositionX() < -bug->getContentSize().width - 100){
+			bug->setVisible(false);
+		}
+		else
+			bug->setPositionX(bug->getPositionX() - (4 + BACKGROUND_SPEED));
+	}
+
 	
 }
 
 void Manager::createBug(){
-	bug = Base::create();
-	bug->sprite = Sprite::createWithSpriteFrameName("bug0.png");
-	bug->addChild(bug->sprite);
-	bug->sprite->runAction(bug->createAnimate(frameCache, 4, "bug"));
-	auto phyBody = PhysicsBody::createBox(bug->sprite->getContentSize());
-	phyBody->getShape(0)->setMaterial(PHYSICSBODY_MATERIAL_DEFAULT);
-	phyBody->setCollisionBitmask(0x02);
-	phyBody->setContactTestBitmask(1);
-	phyBody->setRotationEnable(false);
-	bug->setPhysicsBody(phyBody);
-	bug->setVisible(false);
-	bug->setTag(bugTag);
-	this->addChild(bug);
+	for (int i = 0; i < 2; ++i){
+		auto bug = Base::create();
+		bug->sprite = Sprite::createWithSpriteFrameName("bug0.png");
+		bug->addChild(bug->sprite);
+		bug->sprite->runAction(bug->createAnimate(frameCache, 4, "bug"));
+		auto phyBody = PhysicsBody::createBox(bug->sprite->getContentSize());
+		phyBody->getShape(0)->setMaterial(PHYSICSBODY_MATERIAL_DEFAULT);
+		phyBody->setCollisionBitmask(0x02);
+		phyBody->setContactTestBitmask(1);
+		phyBody->setRotationEnable(false);
+		bug->setPhysicsBody(phyBody);
+		bug->setVisible(false);
+		bug->setTag(bugTag);
+		this->addChild(bug);
+		this->m_bug.pushBack(bug);
+	}
 }
