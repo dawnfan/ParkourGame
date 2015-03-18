@@ -1,4 +1,5 @@
 #include "Manager.h"
+#include "PlayLayer.h"
 
 USING_NS_CC;
 
@@ -59,7 +60,7 @@ void Manager::update(float dt){
 			setNum++;
 		}
 		//让金币移动
-		coin->setPositionX(coin->getPositionX() - 2);
+		coin->setPositionX(coin->getPositionX() - BACKGROUND_SPEED);
 	}
 	if (setNum == 5){
 		int i = 0;
@@ -92,7 +93,7 @@ void Manager::update(float dt){
 		if (!barr->isVisible())
 			setNum++;
 		//比背景移动的快一倍
-		barr->setPositionX(barr->getPositionX() - 4);
+		barr->setPositionX(barr->getPositionX() - (2+BACKGROUND_SPEED));
 	}
 	if (setNum == 5){
 		float posX = WIDTH+400;
@@ -114,8 +115,7 @@ void Manager::update(float dt){
 	//bug
 	if (bug->getPositionX() < -bug->getContentSize().width - 100)
 		bug->setVisible(false);
-	//比背景移动的快一倍
-	bug->setPositionX(bug->getPositionX() - 6);
+	bug->setPositionX(bug->getPositionX() - (4+BACKGROUND_SPEED));
 	
 }
 

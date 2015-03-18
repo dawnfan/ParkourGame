@@ -5,6 +5,9 @@
 #include "SquareSprite.h"
 #include "Raindrop.h"
 #include "PlayLayer.h"
+#include "Popup.h"
+#include "EndLayer.h"
+
 
 USING_NS_CC;
 

@@ -12,8 +12,6 @@ bool Base::init(){
 Animate* Base::createAnimate(SpriteFrameCache* frameCache,int n,const char* name){
 	SpriteFrame* frame = NULL;
 	//数组不行 要用vector
-	//auto frameArray = Array::create();
-	//frameArray->retain();
 	Vector<SpriteFrame*>frameArray;
 
 	// 用一个列表保存所有SpriteFrame对象 
