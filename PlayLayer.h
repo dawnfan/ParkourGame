@@ -32,6 +32,7 @@ public:
 	void setTarget(unsigned tar);
 	ProgressTimer* getProbar();
 	Sprite* getHaze();
+
 private:
 	//物理世界
 	PhysicsWorld* m_world;
@@ -62,14 +63,14 @@ private:
 	LabelTTF* m_level;
 	LabelTTF* m_target;
 	LabelTTF* m_score;
-	
-
-	//初始化背景
-	void initBG();
-	//吃金币粒子特效
-	void runEffect(Sprite* coin);
 	//进度条
 	ProgressTimer* proBar;
+
+
+	//吃金币粒子特效
+	void runEffect(Sprite* coin);
+	//初始化背景
+	void initBG();
 };
 
 #endif // __PLAYLAYER_H__
