@@ -96,9 +96,10 @@ void PlayLayer::initBG(){
 	haze->setOpacity(210);
 	haze->setPosition(visibleSize.width / 2, visibleSize.height / 2);
 	this->addChild(haze, 10);
-	
+	//根据当前关卡选择不同的背景
+	int bgid = level % 4 - 1;
 	//背景1
-	bgSprite1 = Sprite::create("bg1.png");
+	bgSprite1 = Sprite::create(CCString::createWithFormat("bg/bg%d.png", bgid)->getCString());
 	bgSprite1->setPosition(origin.x + visibleSize.width / 2, origin.y+visibleSize.height / 2);
 	this->addChild(bgSprite1,1);
 
@@ -116,7 +117,7 @@ void PlayLayer::initBG(){
 
 
 	//背景2
-	bgSprite2 = Sprite::create("bg2.png");
+	bgSprite2 = Sprite::create(CCString::createWithFormat("bg/bg%d.png", bgid+1)->getCString());
 	bgSprite2->setPosition(bgSprite1->getContentSize().width + visibleSize.width / 2, visibleSize.height / 2);
 	this->addChild(bgSprite2,1);
 
@@ -152,12 +153,12 @@ void PlayLayer::initBG(){
 	m_score->setPosition(board_score->getContentSize().width/2,
 							visibleSize.height-board_score->getContentSize().height*2/3-10);
 	m_score->setColor(Color3B(139, 248, 178));
-	this->addChild(m_score,13);
+	this->addChild(m_score,14);
 	m_target = LabelTTF::create(CCString::createWithFormat("%d",target)->getCString(), "fonts/jokerman.ttf", 48);
 	m_target->setPosition(visibleSize.width-board_target->getContentSize().width/2,
 							visibleSize.height-board_target->getContentSize().height*2/3-10);
 	m_target->setColor(Color3B(255,209,27));
-	this->addChild(m_target,13);
+	this->addChild(m_target,14);
 	//能量背景
 	auto board_energy = Sprite::create("board_energy.png");
 	board_energy->setPosition(visibleSize.width/2,visibleSize.height-board_energy->getContentSize().height*3/2+10);
@@ -268,6 +269,13 @@ bool PlayLayer::onContactBegin(PhysicsContact& contact)
 		}
 		body_1->setVisible(false);
 	}
+	else if (body_1->getTag() == 1 && body_2->getTag() == 4){
+		if (body_2->isVisible()){
+			body_1->runAction(Blink::create(0.5, 3));
+			this->proBar->setPercentage(proBar->getPercentage() - 10);
+		}
+		body_2->setVisible(false);
+	}
 	return true;
 }
 
@@ -300,7 +308,10 @@ void PlayLayer::onKeyReleased(EventKeyboard::KeyCode keycode,Event* event){
 
 void PlayLayer::setLevel(unsigned lev){
 	this->level = lev;
+	int bgid = (lev-1) % 4;
 	this->m_level->setString(CCString::createWithFormat("Level %d",this->level)->getCString());
+	this->bgSprite1->setTexture(CCString::createWithFormat("bg/bg%d.png", bgid)->getCString());
+	this->bgSprite2->setTexture(CCString::createWithFormat("bg/bg%d.png", bgid+1)->getCString());
 }
 
 void PlayLayer::setTarget(unsigned tar){
